@@ -1,23 +1,11 @@
 package maps
 
-type DefaultMap[K comparable, V any] map[K]V
-
-func (m DefaultMap[K, V]) Get(key K) V {
-	return m[key]
+type Entry[K any, V any] struct {
+	Key   K
+	Value V
 }
 
-func (m DefaultMap[K, V]) Put(key K, value V) V {
-	m[key] = value
-	return value
-}
-
-func (m DefaultMap[K, V]) Remove(key K) V {
-	v := m[key]
-	delete(m, key)
-	return v
-}
-
-func (m DefaultMap[K, V]) Keys() []K {
+func Keys[K comparable, V any](m map[K]V) []K {
 	keys := make([]K, len(m))
 	for k := range m {
 		keys = append(keys, k)
@@ -25,7 +13,7 @@ func (m DefaultMap[K, V]) Keys() []K {
 	return keys
 }
 
-func (m DefaultMap[K, V]) Values() []V {
+func Values[K comparable, V any](m map[K]V) []V {
 	values := make([]V, len(m))
 	for _, v := range m {
 		values = append(values, v)
@@ -33,7 +21,7 @@ func (m DefaultMap[K, V]) Values() []V {
 	return values
 }
 
-func (m DefaultMap[K, V]) Entries() []Entry[K, V] {
+func Entries[K comparable, V any](m map[K]V) []Entry[K, V] {
 	entries := make([]Entry[K, V], len(m))
 	for k, v := range m {
 		entries = append(entries, Entry[K, V]{
@@ -44,29 +32,10 @@ func (m DefaultMap[K, V]) Entries() []Entry[K, V] {
 	return entries
 }
 
-func (m DefaultMap[K, V]) GetOrDefault(key K, defaultValue V) V {
-	v := m[key]
-	if v == nil {
-		return defaultValue
+func Mapping[K comparable, V any, U any](m map[K]V, fn func(key K, value V) U) []U {
+	us := make([]U, len(m))
+	for k, v := range m {
+		us = append(us, fn(k, v))
 	}
-	return v
-}
-
-func (m DefaultMap[K, V]) PutIfAbsent(key K, value K) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m DefaultMap[K, V]) ComputeIfAbsent(key K, mappingFn Mapping[K, V]) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (m DefaultMap[K, V]) ComputeIfPresent(key K, remappingFn ReMapping[K, V]) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func Wrap[K comparable, V any](m map[K]V) Map[K, V] {
-	return DefaultMap[K, V](m)
+	return us
 }
