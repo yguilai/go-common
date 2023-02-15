@@ -39,3 +39,31 @@ func Mapping[K comparable, V any, U any](m map[K]V, fn func(key K, value V) U) [
 	}
 	return us
 }
+
+func SingleMap[K comparable, V any](key K, val V) map[K]V {
+	m := make(map[K]V)
+	m[key] = val
+	return m
+}
+
+func Of[K comparable, V any](keys []K, values ...V) map[K]V {
+	if len(keys) != len(values) {
+		return nil
+	}
+	return ofMap(keys, values)
+}
+
+func MustOf[K comparable, V any](keys []K, values ...V) map[K]V {
+	if len(keys) != len(values) {
+		panic("the length of the keys must be equal to the length of the values")
+	}
+	return ofMap(keys, values)
+}
+
+func ofMap[K comparable, V any](keys []K, values []V) map[K]V {
+	m := make(map[K]V, len(keys))
+	for i, key := range keys {
+		m[key] = values[i]
+	}
+	return m
+}
